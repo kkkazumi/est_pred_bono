@@ -41,14 +41,14 @@ double func(double factor, double mental, int func_num){
       a = 2.0;
       b = 0.5;
       c = mental;
-      ret = gauss(factor,a,b,c);
+      ret = c*gauss(factor,a,b,c);
       break;
     case 1:
-      //-------------------TODO
-      a = 2.0*(mental+5.0);
-      b = 1.0/80.0;
-      c = 0.5;
-      ret = sig(factor,a,b,c);
+      //timing negative, gauss
+      a = 2.0;
+      b = 0.5;
+      c = 1.0/mental;
+      ret = 1-mental*gauss(factor,a,b,c);
       break;
     case 2:
       //oqtype positive, sig
@@ -58,24 +58,25 @@ double func(double factor, double mental, int func_num){
       ret = sig(factor,a,b,c);
       break;
     case 3:
-      //-------------------TODO
-      a = 1.0/80.0;
-      b = 0.3;
-      c = 0.05/(mental+1.0);
-      ret = gauss(factor,a,b,c);
+      //oqtype negative, sig
+      a = -3.0;
+      b = 0.5;
+      c = 0.5*mental;
+      ret = sig(factor,a,b,c);
       break;
     case 4:
       //topic positive, sig
       a = -0.5*(mental-0.5);
       b = 10.0;
-      c = 0.5*pow(mental,mental);
+      c = 0.5/pow(mental,mental);
       ret = sig(factor,a,b,c);
       break;
     case 5:
-      //-------------------TODO
-      a = 10.0/(mental+1.0);
-      b = 1.0;
-      ret = inv_up(factor,a,b);
+      //topic negative, sig
+      a = 0.5*(mental-0.5);
+      b = 10.0;
+      c = 0.5/pow(mental,mental);
+      ret = sig(factor,a,b,c);
       break;
     case 6:
       //turn positive, sig
@@ -85,10 +86,11 @@ double func(double factor, double mental, int func_num){
       ret = sig(factor,a,b,c);
       break;
     case 7:
-      //-------------------TODO
-      a = 2.0*(mental/2.0+4.0);
+      //turn negative, sig
+      a = -3.0;
       b = 1.0;
-      ret = inv_down(factor,a,b);
+      c = 0.5/(1.0-mental);
+      ret = sig(factor,a,b,c);
       break;
   return ret;
   }
