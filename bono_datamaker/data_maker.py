@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 
-#user_list={'B9001','B9002','B9003','B9004','B9005'}
 user_list={'B9001','B9002','B9003'}
 cond_list={"ML","CN"}
 
@@ -13,6 +12,7 @@ def divide_data(data):
     return new_data
 
 def extract_first_pause(df,target_label):
+
     return df[df[target_label]==0]
 
 def drop_data(df,drop_list):
@@ -34,6 +34,7 @@ def get_factor_data(userid,condition):
     _new_df = drop_data(extract_first_pause(df,target_label),drop_list)
     new_df = switch_data(_new_df,new_columns)
     new=data[:,8] + 1
+
     return new_df
 
 def get_signal_data(userid,condition):
@@ -48,27 +49,34 @@ def get_signal_data(userid,condition):
 for userid in user_list:
     for condition in cond_list:
         factor=get_factor_data(userid,condition)
+        
+        timing=pd.read_csv("./timing/"+userid+"_"+condition+"_timing.csv",header=None,names=['turn num','timing'])
+
         signal=get_signal_data(userid,condition)
         TURN_NUM = 20
         new_factor= np.zeros((1,5))
         new_signal= np.zeros((1,3))
         count = 0
-        for t in range(TURN_NUM):
+        for t in range(2,TURN_NUM):
             if(any(factor['turn num']==t)):
                 if(any(signal['turn num']==t)):
-                    fval=factor[factor['turn num']==t].values
-                    sval=signal[signal['turn num']==t].values/100.0
-                    if(count==0):
-                        new_factor[0,:]=fval[0]
-                        new_signal[0,:]=sval[0]
-                        count+=1
-                    else:
-                        new_factor=np.append(new_factor,fval,axis=0)
-                        new_signal=np.append(new_signal,sval,axis=0)
+                    if(any(timing['turn num']==t)):
+                        fval=factor[factor['turn num']==t].values
+                        sval=signal[signal['turn num']==t].values/100.0
+                        timing_val=timing[timing['turn num']==t].values[0,1]/5.0+0.1
+                        fval[0,0] = timing_val
+                        if(count==0):
+                            new_factor[0,:]=fval[0]
+                            new_signal[0,:]=sval[0]
+                            count+=1
+                        else:
+                            new_factor=np.append(new_factor,fval,axis=0)
+                            new_signal=np.append(new_signal,sval,axis=0)
         fsave_arr=new_factor[:,:4]
         ssave_arr=new_signal[:,1:]
 
         ffilename = "./data/sudata/"+userid+"_"+condition+"_factor.csv"
         sfilename = "./data/sudata/"+userid+"_"+condition+"_signal.csv"
-        np.savetxt(ffilename,fsave_arr,delimiter=",",fmt='%1.3f')
-        np.savetxt(sfilename,ssave_arr,delimiter=",",fmt='%1.3f')
+        #np.savetxt(ffilename,fsave_arr,delimiter=",",fmt='%1.3f')
+        #np.savetxt(sfilename,ssave_arr,delimiter=",",fmt='%1.3f')
+        print("not saved")
